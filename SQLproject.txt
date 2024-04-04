@@ -1,0 +1,90 @@
+create database Aircargo;
+/*Q1 - Write a query to create a route_details table using suitable data types for the fields, such as route_id, 
+flight_num, origin_airport, destination_airport, aircraft_id, and distance_miles;
+ implement the check constraint for the flight number and unique constraint for the route_id fields;
+ also, make sure that the distance miles field is greater than 0.*/
+ CREATE TABLE route_details (
+    route_id INT PRIMARY KEY,
+    flight_num VARCHAR(10) CHECK (flight_num LIKE '____-____'),
+    origin_airport VARCHAR(50),
+    destination_airport VARCHAR(50),
+    aircraft_id INT,
+    distance_miles FLOAT CHECK (distance_miles > 0),
+    UNIQUE (route_id)
+);
+select * from route_details;
+
+/*Q2 - Write a query to display all the passengers (customers) 
+who have traveled on routes 01 to 25; refer to the data from the passengers_on_flights table*/
+
+select * from passengers_on_flights
+where route_id between 1 and 25;
+
+/*Q3 - Write a query to identify the number of passengers and total revenue in business class from the ticket_details table.*/
+
+select * from ticket_details;
+SELECT class_id,
+    COUNT(*),
+    SUM(Price_per_ticket) 
+FROM ticket_details
+WHERE class_id = 'Business'
+group by class_id;
+/*Q4 - Write a query to display the full name of the customer by extracting the first name and last name from the customer table.*/
+SELECT CONCAT(first_name, ' ', last_name) AS full_name
+FROM customer;
+
+/*Q5 - Write a query to extract the customers who have registered and booked a ticket. 
+Use data from the customer and ticket_details tables.*/
+SELECT c.customer_id, c.first_name, c.last_name
+FROM customer c
+JOIN ticket_details td ON c.customer_id = td.customer_id;
+
+/*Q6 - Write a query to identify the customer’s first name and last name based 
+on their customer ID and brand (Emirates) from the ticket_details table*/
+SELECT c.first_name, c.last_name
+FROM customer c
+JOIN ticket_details td ON c.customer_id = td.customer_id
+WHERE td.brand = 'Emirates';
+
+/*Q7 - Write a query to identify the customers who have traveled 
+by Economy Plus class using Group By and Having clause on the passengers_on_flights table.*/
+SELECT p.customer_id,c.first_name,c.last_name
+from passengers_on_flights p
+join customer c on c.customer_id = p.customer_id
+where p.class_id = 'Economy plus'
+group by p.customer_id,c.first_name,c.last_name
+having count(*) > 0;
+
+/*Q8 - Write a query to identify whether the revenue has crossed 10000 using the IF clause on the ticket_details table.*/
+SELECT
+    CASE
+        WHEN SUM(Price_per_ticket) > 10000 THEN 'Revenue crossed $10000'
+        ELSE 'Revenue not crossed $10000'
+    END AS revenue_status
+FROM ticket_details;
+
+/*Q9 - Write a query to create and grant access to a new user to perform operations on a database*/
+
+/*Q10 - Write a query to find the maximum ticket price for each class using window functions on the ticket_details table.*/
+
+SELECT
+    class_id,
+    MAX(Price_per_ticket) OVER(PARTITION BY class_id) AS max_ticket_price
+FROM ticket_details;
+
+/*Q11 - Write a query to extract the passengers whose route ID is 4 by improving the speed and
+ performance of the passengers_on_flights table.*/
+
+ SELECT customer_id
+FROM passengers_on_flights
+WHERE route_id = 4;
+
+use aircargo;
+/*Q12 - For route ID 4, write a query to view the execution plan of the passengers_on_flights table.*/
+EXPLAIN SELECT customer_id FROM passengers_on_flights WHERE route_id = 4;
+
+/*Q13 - Write a query to calculate the total price of all tickets booked by a customer 
+across different aircraft IDs using the rollup function*/
+
+
+
